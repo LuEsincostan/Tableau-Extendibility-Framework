@@ -10,3 +10,7 @@ div.DTS div.dataTables_scrollBody {
 .sheet_name {
     font-weight: bold;
 }
+
+tbody  {
+	color: #4e4a4a;
+}
