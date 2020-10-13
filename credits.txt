@@ -1,0 +1,4 @@
+Co-authors on this extension
+
+Timo Tauthenhahnm ()			Responsible for the entire JS part of the project
+Konstantin Greger (@kgreger)	Responsible for all the mapping functionality of the project
