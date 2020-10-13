@@ -142,11 +142,11 @@
 		console.log("sendDataTableToPython1");
 				
 	
-		// setup some JSON to use
+		// setup some JSON to use TESTLIST "waferList1"
 		var waferList1 = [
-		{ "type":"wafer", "id":"C92685.1"},
-		{ "type":"wafer2", "id":"C92685.2" },
-		{ "type":"no wafer","id": "C92685.3" }
+		{ "type":"wafer", "id":"Wafer 123"},
+		{ "type":"wafer2", "id":"Wafer 234" },
+		{ "type":"no wafer","id": "Wafer 345" }
 		];
 		
 			console.log("doWork function called");
@@ -192,61 +192,7 @@
 				
 		console.log(pureWaferData);
 		
-		
-				$.post("http://localhost:8888/extensions-api-master/myExtensions/Wafer-Work/waferExample/static/php/writeWaferToDb.php", JSON.stringify(pureWaferData), function(){
-
-		});
-		
-		
-/*
-		$.post('static/php/writeWaferToDb.php',{
-            name:"customerName",
-            cluster:"clusterName",
-            userinput:"userInput",
-          },			
-			function(data)  {
-				$('#result').html(data);
-		});	
-		
-		
-		$.ajax({
-            type : "POST",  //type of method
-            url  : "static/php/writeWaferToDb.php",  //your page
-            data : { name:"customerName", cluster:"clusterName", userinput:"userInput" },// passing the values
-            success: function(res){  
-                              console.log("Successfully called POST function to PHP");
-						}
-			});
-	*/	
-		
-		
-		
-		
-		$.post('http://localhost:8888/extensions-api-master/myExtensions/Wafer-Work/waferExample/static/php/writeWaferToDb.php',{
-            name:"customerName",
-            cluster:"clusterName",
-            userinput:"userInput",
-            checkbox:"checkBox",
-            measure:"selectedMeasure",
-          },
-				
-	
-				
-				function(data)  {
-					$('#result').html(data);
-				});
-		 console.log("setup some JSON to send to PHP");
-		//refreshSheet();
-		//return cell.formattedValue;
-		
-		
-		// stop link reloading the page
-		event.preventDefault();
-        }
-		
-	
-	
-	
+					
 	
 
     function populateDataTable(data, columns) {
@@ -339,51 +285,3 @@
         });
     }
 })();
-
-
-
-
-
-  function writeBackMarks (selectedDataTable) {
-	  var i = 0;
-	  console.log("2. writeBackMarks");
-				//Cluster Name from the first Column
-				//var clusterName = selectedDataTable[0][0].formattedValue;
-				var clusterName = document.getElementById("user_input").value;
-
-				//1te Spalte = customerName
-				console.log(selectedDataTable[0][0].formattedValue + ': selectedDataTable[0][1].formattedValue');
-				var customerName = selectedDataTable[0][0].formattedValue;
-				//var customerName = "Neal Wolfe";
-
-
-       // var checkBox = document.getElementById("user_input").value;
-        var userInput = document.getElementById("data_table_text_0").value;
-        var checkBox = document.getElementById("data_table_checkbox_0").checked;
-
-        //Measure needs to be the 3rd column in this setup!!!
-        //var selectedMeasure = selectedDataTable[0][2].formattedValue;
-        var selectedMeasure = 9999;
-				
-				
-				//alert("customerName:" +customerName);
-			//	alert("INFO: The Customer is now part of the Database.");
-				
-		//alert("tableau.extensions.dashboardContent.dashboard.worksheets.get(sheetMySql);: "+tableau.extensions.dashboardContent.dashboard.worksheets.get("sheetMySql"););
-		
-		$.post('php/writeWaferToDb.php',{
-            name:customerName,
-            cluster:clusterName,
-            userinput:userInput,
-            checkbox:checkBox,
-            measure:selectedMeasure,
-          },
-				
-	 
-				
-				function(data)  {
-					$('#result').html(data);
-				});
-			refreshSheet();
-			//return cell.formattedValue;
-        }
