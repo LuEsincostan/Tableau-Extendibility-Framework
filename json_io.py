@@ -21,7 +21,7 @@ from geoalchemy2 import Geometry, WKTElement
 from io import StringIO
 
 #####DB info
-db_host= 'ae1528ad9daf4e9.tsi.lan' #'20cc44dbfbcb48c.tsi.lan'
+db_host= 'db_host' 
 
 db_name = 'wafer_ext_demo'
 db_user = 'admin'
