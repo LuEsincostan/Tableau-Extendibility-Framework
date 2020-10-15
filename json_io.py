@@ -299,13 +299,6 @@ def worker():
 	#
 	#
 	application_pictures = os.path.join("static", "wafer-images")
-	#only necessary for testing
-	application_data = os.path.join("static", "test_data")
-	path='waferId_F05758.4_2.json'
-	#import json data
-	#file_path = os.path.join(application_data, 'waferId_F05758.4_2.json')
-
-	#f=open(file_path)
 
 	result = plot_and_export_wafer_maps(data, application_pictures)
 	print(result)
