@@ -1,8 +1,9 @@
 <html>  
-<head>
+<head>	
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="icon" type="image/png" href="/static/img/chips.ico">
 
     <title>Wafer Extension</title>
 
@@ -22,44 +23,43 @@
   <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
   
-  
+
 
     <!-- Include our own style sheets and javascript code -->
     <link href="static/css/styles.css" type="text/css" rel="stylesheet">
     <script src="static/js/tableau-extension.js"></script>
 	
+	<!-- Image Grid -->
+	<link rel="stylesheet" href="static/css/image-grid.css">
 	
-	
-	<!-- Send data to Python 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-	<script type="text/javascript">
-	// setup some JSON to use
-	var waferList = [
-		{ "type":"wafer", "id":"C92685.1"},
-		{ "type":"wafer", "id":"C92685.2" },
-		{ "type":"no wafer","id": "C92685.3" }
-	];
+	<!-- Image Grid filters Tableau -->
+    <script src="static/js/filter-tableau-based-on-wafer-image.js" defer></script>
 
-	window.onload = function() {
-		// setup the button click
-		document.getElementById("theButton").onclick = function() {
-			doWork()
-		};
-	}
 
-	function doWork() {
-		console.log("doWork function called");
-		// ajax the JSON to the server
-		$.post("receiver", JSON.stringify(waferList), function(){
-
-		});
-		// stop link reloading the page
-	 event.preventDefault();
-	}
-	</script>-->
 </head>
 
 <body>
+
+	<section class="section">
+	  <h1>Wafer Extension</h1>
+	  <div class="grid">
+	  
+	  <!--
+		<div id="id1" class="item item--medium" onclick="filterOnAnArray(['Wafer 1234']);">
+		  <div class="item__details">
+			Wafer 1234
+		  </div>
+		</div>
+		<div id="id2" class="item item--medium" onclick="filterOnAnArray(['Wafer 5678']);">
+		  <div class="item__details">
+			Wafer 5678
+		  </div>
+		</div>
+		-->
+		
+	  </div>
+	</section>
+	
     <div class="container-fluid">
         <!-- Main UI -->
         <div id="selected_marks">
@@ -77,11 +77,10 @@
             </h4>
             <div id="data_table_wrapper"></div>
             <div id="no_data_message">
-                <h5>No marks selected</h5>
+                <h5>Please select a Wafer</h5>
             </div>
         </div>
     </div>
-	
 	
 
 
@@ -102,6 +101,7 @@
             </div>
         </div>
     </div>
+	
 </body>
 </html>
 

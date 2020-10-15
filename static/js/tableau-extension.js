@@ -115,8 +115,10 @@
 			console.log(data);
 			//writeBackMarks(selectedDataTable);
 			
-			//ACtual dataset, Column Names, Wafer Id (can change in it's position, so create a loop instead)			
-			sendOneWaferToPython(data,columns,data[0][1]);
+			//Actual dataset, Column Names, Wafer Id (can change in it's position, so create a loop instead)			
+			sendSelectedWafersToPython(data,columns,data[0][1]);
+			//console.log("data");
+			//console.log(data);
 			
 
             // Populate the data table with the rows and columns we just pulled out
@@ -138,6 +140,8 @@
         });
     }
 	
+	
+	/** TODO: delete if no error!!!!
 	function sendDataTableToPython1() {
 		console.log("sendDataTableToPython1");
 				
@@ -151,7 +155,7 @@
 		
 			console.log("doWork function called");
 			// ajax the JSON to the server
-			$.post("receiver", JSON.stringify(waferList1), function(){
+			$.post("renderpictures", JSON.stringify(waferList1), function(){
 
 			});
 			// stop link reloading the page
@@ -160,93 +164,264 @@
 		
 	}
 	
+	*/
 	
-	
-	function sendOneWaferToPython(data,columns,oneWafer) {
-		console.log("sendOneWaferToPython");
-		console.log("oneWafer: "+ oneWafer);
-		console.log("data within sending function: ");
+	function sendSelectedWafersToPython(data,columns,oneWafer) {
+		console.log("#########################################################################");
+		console.log("###################### sendSelectedWafersToPython #######################");
+		console.log("#########################################################################");
+		console.log("data");
 		console.log(data);
+		console.log(" ");
+		console.log("oneWafer");
+		console.log(oneWafer);
+		console.log(" ");
+		console.log("columns");
+		console.log(columns);
+		console.log(typeof columns);
+		
+		
+		//geting a unique array of wafer ids selected
+		function getUniqueWaferIds(dim2array) {
+			var uniques = [];
+			var itemsFound = {};
+			for(var i = 0, l = dim2array.length; i < l; i++) {
+				var stringified = JSON.stringify(dim2array[i][2]);
+				if(itemsFound[stringified]) { continue; }
+				uniques.push(dim2array[i][2]);
+				itemsFound[stringified] = true;
+			}
+			return uniques;
+		}
+		
+		//var relevantData = [[],[]];
+		var columnHeader;
+		var uniqueWaferIdArray = getUniqueWaferIds(data);
+		//var iterateThroughAllColumns(data);
+		
+		
+
+		//statically 2 features | loop through amount of columns for dynamic feature set
+		var amountOfFeatures = 0;
+			
+		
+		//define standard columns
+		const columns_std = ["Wafer Id","X","Y"];
+		//define excluded columns DEFAULT: ["CNT(Feature)"];
+		const columns_excluded = ["CNT(Feature)"];
+		var array_of_column_numbers_excluded = [];
+				
+		for (var c = 0; c < columns.length; c++) {
+				
+			columnHeader = columns[c]["title"];
+			console.log("Column "+c+": " + columnHeader);
+			
+			
+			if (columns_excluded.includes(columnHeader)) {
+				array_of_column_numbers_excluded.push(c);
+				console.log("array_of_column_numbers_excluded: "+array_of_column_numbers_excluded);
+			
+			} else if //if column header is not part of standard columns and excluded ones
+				   //count the amount of features (and therefore images which will get created)			
+			       (!columns_std.includes(columnHeader) && !columns_excluded.includes(columnHeader)  ) {
+				
+						amountOfFeatures++;
+						//alert("amountOfFeatures: "+amountOfFeatures);
+					}
+				
+		}		
+		
+			
+		var existingDiv;
+		//var newDiv;	
+		for (var i = 0; i < uniqueWaferIdArray.length; i++) {
+			for (var f = 0; f < amountOfFeatures; f++) {
+						
+				var waferImageUnderscoreFeature = uniqueWaferIdArray[i]+"_"+f;		
+
+				if (!document.getElementById(waferImageUnderscoreFeature)) {
+					
+					//new div for wafer loading image
+					var newDiv = document.createElement("div");
+
+					//set id of this div to first value within uniqueWaferIdArray
+					newDiv.setAttribute("id",waferImageUnderscoreFeature);
+					newDiv.setAttribute("class","item item--medium");
+					newDiv.setAttribute("onclick","filterOnAnArray(['"+uniqueWaferIdArray[i]+"']);");				
+					document.getElementsByClassName("grid")[0].appendChild(newDiv);
+
+					//Create Label + Loading Image before each Wafer got plotted
+					var divLabel = document.createElement("div");
+					divLabel.setAttribute("class","item__details");
+					divLabel.setAttribute("id","item__details"+waferImageUnderscoreFeature);
+					document.getElementById(waferImageUnderscoreFeature).appendChild(divLabel);
+					htmlTextNode = document.createTextNode(""+uniqueWaferIdArray[i]);
+					divLabel.appendChild(htmlTextNode);	
+
+					//Writing to Database GIF; remove once data is written into database (after Python response)
+					var writeToDbGif = document.createElement("div");
+					writeToDbGif.setAttribute("class","writing-to-db-gif");
+					writeToDbGif.setAttribute("id","writing-to-db-gif-"+waferImageUnderscoreFeature);
+					document.getElementById("item__details"+waferImageUnderscoreFeature).appendChild(writeToDbGif);
+					
+					//document.getElementById("item__details"+waferImageUnderscoreFeature).style.marginTop="0px";
+					//document.getElementById("item__details"+waferImageUnderscoreFeature).style.marginRight="0px";	
+					htmlTextNode = document.createTextNode(""); //originally: Loading...
+					//htmlTextNode.setAttribute("id","writing-to-db-status-text-"+waferImageUnderscoreFeature);
+					writeToDbGif.appendChild(htmlTextNode);	
+
+				}	
+				document.getElementById(waferImageUnderscoreFeature).style.backgroundImage = "url('/static/img/loading.gif')";				
+								
+					//if (f==0) {
+						//scroll into WaferId the user selected first
+						console.log("scroll into WaferId the user selected first");
+						var firstWafer = document.getElementById(waferImageUnderscoreFeature);
+						firstWafer.scrollIntoView();	
+					//}
+			}
+			
+		}
+		console.log("ALL LOADING IMAGES GENERATED!!!!");	  
+				
 	
-	
+		//getting rid of all columns which are part of the "columns_excluded" array
+		//for the "data" array as well as the "columns" array
+		var idx = array_of_column_numbers_excluded;
+		for (var n = 0; n < idx.length; n++) {
+			console.log("Getting rid of CNT(1) from columns header array");
+			console.log(columns);
+			console.log("idx[n]"+idx[n]);
+			columns.splice(idx[n],1);
+					
+			console.log("Getting rid of CNT(1) Feature");
+			console.log(data);					
+			for (var i = 0; i < data.length; i++) {
+				data[i].splice(idx, 1);				
+			}			
+		}
+		
+		
+
+
+				  
+		
+		
 		// setup some JSON to send to Python
 		var waferList = [
 			{ "waferId":oneWafer, "columns":columns, "data":data}
 		];
-		
-		console.log("setup some JSON to send to Python");
-		// ajax the JSON to the server
-		$.post("receiver", JSON.stringify(waferList), function(){
 
-		});
-		/**/
 		
+		var pythonResponse;
+		var waferIdWithUnderscore;
+		var waferId;
+		var waferPng;		
+		var waferPathPng;
+		var waferStylePathPng;		
+		var htmlTextNode;
 		
-		
-		
-		//setup some JSON to send to PHP
-		var pureWaferData = [
-			{"data":data}
-		];
-		
-				
-		console.log(pureWaferData);
-		
-		
-				$.post("http://localhost:8888/extensions-api-master/myExtensions/Wafer-Work/waferExample/static/php/writeWaferToDb.php", JSON.stringify(pureWaferData), function(){
-
-		});
-		
-		
-/*
-		$.post('static/php/writeWaferToDb.php',{
-            name:"customerName",
-            cluster:"clusterName",
-            userinput:"userInput",
-          },			
-			function(data)  {
-				$('#result').html(data);
-		});	
-		
-		
+		console.log("AJAX START 1: Sending JSON to Python to render Wafer images ");
 		$.ajax({
-            type : "POST",  //type of method
-            url  : "static/php/writeWaferToDb.php",  //your page
-            data : { name:"customerName", cluster:"clusterName", userinput:"userInput" },// passing the values
-            success: function(res){  
-                              console.log("Successfully called POST function to PHP");
-						}
-			});
-	*/	
-		
-		
-		
-		
-		$.post('http://localhost:8888/extensions-api-master/myExtensions/Wafer-Work/waferExample/static/php/writeWaferToDb.php',{
-            name:"customerName",
-            cluster:"clusterName",
-            userinput:"userInput",
-            checkbox:"checkBox",
-            measure:"selectedMeasure",
-          },
-				
-	
-				
-				function(data)  {
-					$('#result').html(data);
-				});
-		 console.log("setup some JSON to send to PHP");
-		//refreshSheet();
-		//return cell.formattedValue;
-		
-		
+			type: "POST",
+			url: "renderpictures",
+			data: JSON.stringify(waferList),
+			dataType: 'json',
+			cache: false,
+			success: function (result) {
+				//alert("success:"+result);				
+				pythonResponse = result;
+				console.log("Successfully sent data to Python. Result:");
+				console.log(Object.keys(pythonResponse))	
+
+				var i=0;
+				for (const [key, value] of Object.entries(pythonResponse)) {
+				  //console.log(`${key}: ${value}`);
+				  console.log(`${value}`);
+				  //waferid example: C92001.2_0 -> split at "_"
+				  waferIdWithUnderscore  = `${key}`;
+				  waferId = waferIdWithUnderscore.split("_", 0);
+				  waferPng = `${value}`;
+				  waferPathPng = "/static/wafer-images/"+waferPng;
+				  waferStylePathPng = "url('"+waferPathPng+"')"
+
+				  //Putting correct wafer images into each tile
+				  console.log("START: Putting correct wafer images into each tile");
+				  document.getElementById(waferIdWithUnderscore).style.backgroundImage = waferStylePathPng;
+				  console.log("waferStylePathPng "+waferStylePathPng);
+				  
+				  //Remove "Writing to database gif" (BLOCKER: MOVE this section to other AJAX Python call, once it exists!!!)
+				  console.log("Remove 'Writing to database GIF'");
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).style.backgroundImage = 'none';
+				  
+				  //User Feedback if Successful or FAILED as an Alert
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).style.marginTop="0px";
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).style.marginRight="15px";				      
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).innerHTML="Successfull";
+				  
+				  //show 3 seconds only via CSS fade				  
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).classList.add("class","fadeStatusOut");;
+				  
+				  console.log("i: "+i);
+				  i++;
+				}	
+			},
+			error:function (error) {
+				console.log("ERROR receiving JSON response from Python. So creating an image within Python probably failed or the user did not wait for the first request to be processed completely. Please check if Extension has got access to the Webserver. Maybe a missing VPN connection to Tableau's intranet prevent you in successfully connecting to DB. Please debug Extension prior to reaching out to the authors.");				
+				console.log(error);
+			}
+		});
 		// stop link reloading the page
 		event.preventDefault();
-        }
-		
 	
-	
-	
+
+	  //Call sendDataToDatabase() function	
+		console.log("AJAX START 2: sendDataToDatabase()");
+		$.ajax({
+			type: "POST",
+			url: "dataprocessor",
+			data: JSON.stringify(waferList),
+			dataType: 'json',
+			cache: false,
+			success: function (result) {
+				//alert("success:"+result);				
+				pythonResponse = result;
+				console.log("Successfully sent data to Python -> DB Endpoint '/dataprocessor'! Result:");
+				console.log(Object.keys(pythonResponse))	
+
+				var i=0;
+				for (const [key, value] of Object.entries(pythonResponse)) {
+				  //console.log(`${key}: ${value}`);
+				  console.log(`${value}`);
+				  //waferid example: 8001 -> split at "_"
+				  waferIdWithUnderscore  = `${key}`;
+				  waferId = waferIdWithUnderscore.split("_", 0);
+				  waferPng = `${value}`;
+				  waferPathPng = "/static/wafer-images/"+waferPng;
+				  waferStylePathPng = "url('"+waferPathPng+"')"
+
+				  
+				  console.log("Remove 'Writing to database GIF for: '"+waferPathPng);
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).style.backgroundImage = 'none';
+				  
+				  //User Feedback if Successful or FAILED ()
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).style.marginTop="0px";
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).style.marginRight="15px";				      
+				  document.getElementById("writing-to-db-gif-"+waferIdWithUnderscore).innerHTML="Successfull";
+				  //show 2 seconds only via CSS				  				  
+				  console.log("i: "+i);
+				  i++;
+				}
+				console.log("Send data to database completed, but the COMMIT statement of the database might take a little bit longer!");
+			},
+			error:function (error) {
+				console.log("ERROR receiving JSON response from Python. So writing data into database did probably fail. Please check if Extension has got access to database. Maybe a missing VPN connection to Tableau's intranet prevent you in successfully connecting to DB. Please debug Extension prior to reaching out to the authors.");				
+				console.log(error);
+			}
+		});
+		// stop link reloading the page
+		event.preventDefault();
+	}
 	
 
     function populateDataTable(data, columns) {
