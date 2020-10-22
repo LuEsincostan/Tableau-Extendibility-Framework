@@ -21,7 +21,6 @@ from geoalchemy2 import Geometry, WKTElement
 from io import StringIO
 
 #####DB info
-db_host= 'db_host' 
 
 db_name = 'wafer_ext_demo'
 db_user = 'admin'
@@ -292,7 +291,7 @@ def output():
 	# serve index template
 	return render_template('index.html', name='Test')
 
-@app.route('/receiver', methods = ['POST'])
+@app.route('/renderpictures', methods = ['POST'])
 def worker():
 	# read json + reply
 	data = request.get_json(force=True)
