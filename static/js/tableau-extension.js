@@ -140,31 +140,7 @@
         });
     }
 	
-	
-	/** TODO: delete if no error!!!!
-	function sendDataTableToPython1() {
-		console.log("sendDataTableToPython1");
-				
-	
-		// setup some JSON to use
-		var waferList1 = [
-		{ "type":"wafer", "id":"C92685.1"},
-		{ "type":"wafer2", "id":"C92685.2" },
-		{ "type":"no wafer","id": "C92685.3" }
-		];
-		
-			console.log("doWork function called");
-			// ajax the JSON to the server
-			$.post("renderpictures", JSON.stringify(waferList1), function(){
 
-			});
-			// stop link reloading the page
-		 event.preventDefault();
-		
-		
-	}
-	
-	*/
 	
 	function sendSelectedWafersToPython(data,columns,oneWafer) {
 		console.log("#########################################################################");
@@ -301,10 +277,7 @@
 			}			
 		}
 		
-		
-
-
-				  
+			  
 		
 		
 		// setup some JSON to send to Python
@@ -469,10 +442,13 @@
             $('#no_data_message').css('display', 'inline');
         }
     }
+	
+
 
     function initializeButtons() {
         $('#show_choose_sheet_button').click(showChooseSheetDialog);
         $('#reset_filters_button').click(resetFilters);
+		$('#hide_data_table_button').click(hideDataTable);
     }
 
     // Save the columns we've applied filters to so we can reset them
@@ -493,6 +469,22 @@
         filteredColumns.push(fieldName);
         return false;
     }
+	
+	function hideDataTable() {
+		  var x = document.getElementById("data_table_wrapper");
+		  if (x.style.visibility === "hidden") {
+			x.style.visibility = "visible";
+			x.style.height = "285px";
+			document.getElementById("visibility_icon").innerHTML = "visibility_off";
+			console.log("hideDataTable(visible)");
+		  } else {
+			x.style.visibility = "hidden";
+			x.style.height = "0px";
+			document.getElementById("visibility_icon").innerHTML = "visibility";
+			console.log("hideDataTable(hidden)");
+		  }		
+	}
+	
 
     function resetFilters() {
         const worksheet = getSelectedSheet(tableau.extensions.settings.get('sheet'));
@@ -514,51 +506,3 @@
         });
     }
 })();
-
-
-
-
-
-  function writeBackMarks (selectedDataTable) {
-	  var i = 0;
-	  console.log("2. writeBackMarks");
-				//Cluster Name from the first Column
-				//var clusterName = selectedDataTable[0][0].formattedValue;
-				var clusterName = document.getElementById("user_input").value;
-
-				//1te Spalte = customerName
-				console.log(selectedDataTable[0][0].formattedValue + ': selectedDataTable[0][1].formattedValue');
-				var customerName = selectedDataTable[0][0].formattedValue;
-				//var customerName = "Neal Wolfe";
-
-
-       // var checkBox = document.getElementById("user_input").value;
-        var userInput = document.getElementById("data_table_text_0").value;
-        var checkBox = document.getElementById("data_table_checkbox_0").checked;
-
-        //Measure needs to be the 3rd column in this setup!!!
-        //var selectedMeasure = selectedDataTable[0][2].formattedValue;
-        var selectedMeasure = 9999;
-				
-				
-				//alert("customerName:" +customerName);
-			//	alert("INFO: The Customer is now part of the Database.");
-				
-		//alert("tableau.extensions.dashboardContent.dashboard.worksheets.get(sheetMySql);: "+tableau.extensions.dashboardContent.dashboard.worksheets.get("sheetMySql"););
-		
-		$.post('php/writeWaferToDb.php',{
-            name:customerName,
-            cluster:clusterName,
-            userinput:userInput,
-            checkbox:checkBox,
-            measure:selectedMeasure,
-          },
-				
-	 
-				
-				function(data)  {
-					$('#result').html(data);
-				});
-			refreshSheet();
-			//return cell.formattedValue;
-        }
