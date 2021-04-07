@@ -23,7 +23,7 @@ from io import StringIO
 #####DB info --> ADJUST TO YOUR DB CONNECTION!!!
 db_host= 'localhost'
 
-db_name = 'wafer_ext_demo'
+db_name = 'wafer_ext'
 db_user = 'admin'
 db_user_pw = 'postgres'
 
