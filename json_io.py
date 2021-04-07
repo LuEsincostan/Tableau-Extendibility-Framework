@@ -20,7 +20,8 @@ from sqlalchemy import create_engine
 from geoalchemy2 import Geometry, WKTElement
 from io import StringIO
 
-#####DB info
+#####DB info --> ADJUST TO YOUR DB CONNECTION!!!
+db_host= 'localhost'
 
 db_name = 'wafer_ext_demo'
 db_user = 'admin'
